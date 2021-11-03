@@ -1,21 +1,25 @@
 require("dotenv").config();
 const http = require("http");
 const url = require("url");
-
+const { program } = require("commander");
 const { sum, rest, division, multiplication } = require("./operations");
 
 const server = http.createServer();
 
-const port = process.env.SERVER_PORT || 5000;
+program.option("-p, --port <port>");
+program.parse(process.argv);
 
-server.listen(port, () => {
-  console.log(`Escuchando en el puerto ${port}`);
-});
+let port;
+if (program.opts().port && !Number.isNaN(program.opts().port)) {
+  port = program.opts().port;
+} else {
+  port = process.env.SERVER_PORT || 5000;
+}
+
+server.listen(port);
 
 server.on("request", (request, response) => {
-  const { a, b } = url.parse(request.url, true).query;
-  const num1 = +a;
-  const num2 = +b;
+  const { num1, num2 } = url.parse(request.url, true).query;
   const contentHtml = `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -27,10 +31,10 @@ server.on("request", (request, response) => {
   <body>
     <main>
       <h2>Results</h2>
-      <p>${num1} + ${num2} = ${sum(num1, num2)}</p>
-      <p>${num1} - ${num2} = ${rest(num1, num2)}</p>
-      <p>${num1} * ${num2} = ${multiplication(num1, num2)}</p>
-      <p>${num1} / ${num2} = ${division(num1, num2)}</p>
+      <p>${num1} + ${num2} = ${sum(+num1, +num2)}</p>
+      <p>${num1} - ${num2} = ${rest(+num1, +num2)}</p>
+      <p>${num1} * ${num2} = ${multiplication(+num1, +num2)}</p>
+      <p>${num1} / ${num2} = ${division(+num1, +num2)}</p>
     </main>
   </body>
 </html>`;
@@ -49,11 +53,10 @@ server.on("request", (request, response) => {
     </main>
   </body>
 </html>`;
-  console.log(num2);
+
   response.setHeader("Content-Type", "text/html");
   if (Number.isNaN(num1) || Number.isNaN(num2)) {
     response.write(errorHtml);
-    process.exit(1);
   } else {
     response.write(contentHtml);
   }
