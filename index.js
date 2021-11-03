@@ -20,6 +20,7 @@ server.listen(port);
 
 server.on("request", (request, response) => {
   const { num1, num2 } = url.parse(request.url, true).query;
+  const path = url.parse(request.url, true).pathname;
   const contentHtml = `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -53,12 +54,24 @@ server.on("request", (request, response) => {
     </main>
   </body>
 </html>`;
+  console.log(num1, num2);
 
   response.setHeader("Content-Type", "text/html");
-  if (Number.isNaN(num1) || Number.isNaN(num2)) {
+  if (path !== `/calculator`) {
+    response.statusCode = 404;
+    response.write(`<h1>404 NOT FOUND :(</h1>`);
+  } else if (
+    num1 === undefined ||
+    num2 === undefined ||
+    num1 === "" ||
+    num2 === "" ||
+    Number.isNaN(+num1) ||
+    Number.isNaN(+num2)
+  ) {
     response.write(errorHtml);
   } else {
     response.write(contentHtml);
   }
+
   response.end();
 });
