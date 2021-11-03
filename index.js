@@ -35,21 +35,27 @@ server.on("request", (request, response) => {
   </body>
 </html>`;
   const errorHtml = `<!DOCTYPE html>
-// <html lang="en">
-//   <head>
-//     <meta charset="UTF-8" />
-//     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-//     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-//     <title>Calculator</title>
-//   </head>
-//   <body>
-//     <main>
-//       <h2>ERROR</h2>
-//       <p>You must enter valid numbers</p>
-//     </main>
-//   </body>
-// </html>`;
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calculator</title>
+ </head>
+  <body>
+    <main>
+      <h2>ERROR!</h2>
+      <p>You must enter valid numbers</p>
+    </main>
+  </body>
+</html>`;
+  console.log(num2);
   response.setHeader("Content-Type", "text/html");
-  response.write(contentHtml);
+  if (Number.isNaN(num1) || Number.isNaN(num2)) {
+    response.write(errorHtml);
+    process.exit(1);
+  } else {
+    response.write(contentHtml);
+  }
   response.end();
 });
