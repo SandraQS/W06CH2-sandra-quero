@@ -1,14 +1,22 @@
 require("dotenv").config();
 const http = require("http");
+const url = require("url");
+
 const { sum, rest, division, multiplication } = require("./operations");
 
-const num1 = 2;
-const num2 = 2;
+const server = http.createServer();
 
-const url = http.Server;
-console.log(url);
+const port = process.env.SERVER_PORT || 5000;
 
-const contentHtml = `<!DOCTYPE html>
+server.listen(port, () => {
+  console.log(`Escuchando en el puerto ${port}`);
+});
+
+server.on("request", (request, response) => {
+  const { a, b } = url.parse(request.url, true).query;
+  const num1 = +a;
+  const num2 = +b;
+  const contentHtml = `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -26,32 +34,21 @@ const contentHtml = `<!DOCTYPE html>
     </main>
   </body>
 </html>`;
-const errorHtml = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculator</title>
-  </head>
-  <body>
-    <main>
-      <h2>ERROR</h2>
-      <p>You must enter valid numbers</p>
-    </main>
-  </body>
-</html>`;
-
-const server = http.createServer();
-
-const port = process.env.SERVER_PORT || 5000;
-
-server.listen(port, () => {
-  console.log(`Escuchando en el puerto ${port}`);
-});
-
-server.on("request", (request, response) => {
-  console.log(request);
+  const errorHtml = `<!DOCTYPE html>
+// <html lang="en">
+//   <head>
+//     <meta charset="UTF-8" />
+//     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+//     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+//     <title>Calculator</title>
+//   </head>
+//   <body>
+//     <main>
+//       <h2>ERROR</h2>
+//       <p>You must enter valid numbers</p>
+//     </main>
+//   </body>
+// </html>`;
   response.setHeader("Content-Type", "text/html");
   response.write(contentHtml);
   response.end();
